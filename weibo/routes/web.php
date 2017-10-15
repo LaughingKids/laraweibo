@@ -20,3 +20,7 @@ Route::get('/about', 'Views\PagesController@about')->name('about');
 Route::get('signup','Views\UsersController@create')->name('signup');
 
 Route::resource('users', 'Views\UsersController');
+
+Route::get('login', 'SessionsController@create')->name('login');
+Route::post('login', 'SessionsController@store')->name('login');
+Route::delete('logout', 'SessionsController@destroy')->name('logout');
