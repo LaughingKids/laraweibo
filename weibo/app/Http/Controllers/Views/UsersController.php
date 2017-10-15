@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Mail;
+use Auth;
 
 class UsersController extends Controller
 {
@@ -98,5 +99,9 @@ class UsersController extends Controller
     Auth::login($user);
     session()->flash('success','恭喜你，激活成功！');
     return redirect()->route('users.show',[$user]);
+  }
+
+  public function sendPasswordResetNotification($token) {
+      $this->notify(new ResetPassword($token));
   }
 }
