@@ -9,7 +9,7 @@ class UsersController extends Controller
 {
   public function __construct(){
     $this->middleware('auth',[
-      'except' => ['show', 'create', 'store']
+      'except' => ['show', 'create', 'store','index']
     ]);
     $this->middleware('guest', [
         'only' => ['create']
@@ -23,6 +23,10 @@ class UsersController extends Controller
     return view('users.show',compact('user'));
   }
 
+  public function index(){
+    $users = User::all();
+    return view('users.index', compact('users'));
+  }
   public function edit(User $user) {
     $this->authorize('update', $user);
     return view('users.edit', compact('user'));
