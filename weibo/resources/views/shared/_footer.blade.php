@@ -13,3 +13,4 @@
     </nav>
   </footer>
 </div>
+<script src="/js/app.js"></script>
