@@ -7,6 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 class UsersController extends Controller
 {
+  public function __construct(){
+    $this->middleware('auth',[
+      'except' => ['show', 'create', 'store']
+    ]);
+    $this->middleware('guest', [
+        'only' => ['create']
+    ]);
+  }
   public function create(){
     return view('users.create');
   }
@@ -16,7 +24,8 @@ class UsersController extends Controller
   }
 
   public function edit(User $user) {
-      return view('users.edit', compact('user'));
+    $this->authorize('update', $user);
+    return view('users.edit', compact('user'));
   }
 
   public function store(Request $request) {
@@ -25,7 +34,7 @@ class UsersController extends Controller
          'email' => 'required|email|unique:users|max:255',
          'password' => 'required|confirmed|min:6'
      ]);
-
+     $this->authorize('update', $user);
      $user = User::create([
        'name' => $request->name,
        'email' => $request->email,
