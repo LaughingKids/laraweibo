@@ -18,3 +18,5 @@ Route::get('/help', 'Views\PagesController@help')->name('help');
 Route::get('/about', 'Views\PagesController@about')->name('about');
 
 Route::get('signup','Views\UsersController@create')->name('signup');
+
+Route::resource('users', 'Views\UsersController');
