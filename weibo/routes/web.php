@@ -11,8 +11,10 @@
 |
 */
 
-Route::get('/', 'PagesController@home');
+Route::get('/', 'Views\PagesController@home')->name('home');
 
-Route::get('/help', 'PagesController@help');
+Route::get('/help', 'Views\PagesController@help')->name('help');
 
-Route::get('/about', 'PagesController@about');
+Route::get('/about', 'Views\PagesController@about')->name('about');
+
+Route::get('signup','Views\UsersController@create')->name('signup');
