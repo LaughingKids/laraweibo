@@ -9,6 +9,7 @@ use App\Models\User;
 use Mail;
 use Auth;
 use Cache;
+use Carbon\Carbon;
 
 class UsersController extends Controller
 {
@@ -24,10 +25,20 @@ class UsersController extends Controller
     return view('users.create');
   }
 
-  public function show(User $user){
-    $statuses = $user->statuses()
-                     ->orderBy('created_at','desc')
-                     ->paginate(30);
+  public function show(Request $request,User $user){
+    $page = $request->input('page');
+    if($page == null) {
+      $page = 1;
+    }
+    if(Cache::has('user_'.$user->id.'_statuses_page_'.$page)){
+      $statuses = Cache::get('user_'.$user->id.'_statuses_page_'.$page);
+    } else {
+      $statuses = $user->statuses()
+                       ->orderBy('created_at','desc')
+                       ->paginate(30);
+      $expiresAt = Carbon::now()->addMinutes(1*3600);
+      Cache::put('user_'.$user->id.'_statuses_page_'.$page ,$statuses,$expiresAt);
+    }
     return view('users.show',compact('user','statuses'));
   }
 
