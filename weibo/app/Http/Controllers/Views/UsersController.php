@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Views;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Redis;
 use App\Models\User;
 use Mail;
 use Auth;
@@ -34,7 +35,8 @@ class UsersController extends Controller
     return view('users.index', compact('users'));
   }
 
-  public function edit(User $user) {
+  public function edit($id) {
+    $user = $this->getUserViaRedis($id);
     $this->authorize('update', $user);
     return view('users.edit', compact('user'));
   }
@@ -118,5 +120,15 @@ class UsersController extends Controller
       $users = $user->followers()->paginate(30);
       $title = '粉丝';
       return view('users.show_follow', compact('users', 'title'));
+  }
+
+  protected function getUserViaRedis($id) {
+    $userDetail = Redis::get('user:profile:' . $id);
+    $userDetail = json_decode($userDetail, TRUE);
+    $user = new User();
+    foreach ($userDetail as $key => $value) {
+      $user->{$key} = $value;
+    }
+    return $user;
   }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use Auth;
 
 class SessionsController extends Controller
@@ -32,6 +33,8 @@ class SessionsController extends Controller
            // 该用户存在于数据库，且邮箱和密码相符合
            if(Auth::user()->activated) {
              session()->flash('success', '欢迎回来！');
+             $user = Auth::user();
+             Redis::set('user:profile:'.$user->id, $user);
              return redirect()->route('users.show', [Auth::user()]);
            } else {
              Auth:logout();
@@ -46,6 +49,8 @@ class SessionsController extends Controller
     }
 
     public function destroy(){
+      $user = Auth::user();
+      Redis::del('user:profile:'.$user->id, $user);
       Auth::logout();
       session()->flash('success', '您已成功退出！');
       return redirect('login');
