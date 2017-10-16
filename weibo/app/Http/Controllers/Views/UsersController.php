@@ -68,7 +68,7 @@ class UsersController extends Controller
      ]);
 
      $this->sendEmailConfirmationTo($user);
-     session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+     session()->flash('success', 'Please check your mail box to get activation email.');
      return redirect('/');
   }
 
@@ -84,14 +84,14 @@ class UsersController extends Controller
           $data['password'] = bcrypt($request->password);
       }
       $user->update($data);
-      session()->flash('success', '个人资料更新成功！');
+      session()->flash('success', 'Your profile has been updated successfully.');
       return redirect()->route('users.show', $user->id);
   }
 
   public function destroy(User $user) {
       $this->authorize('destroy', $user);
       $user->delete();
-      session()->flash('success', '成功删除用户！');
+      session()->flash('success', 'Account has been deleted.');
       return back();
   }
 
@@ -101,7 +101,7 @@ class UsersController extends Controller
     $from = 'developer.wxj@gmail.com';
     $name ='Aufree';
     $to = $user->email;
-    $subject = "感谢注册 Sample 应用！请确认你的邮箱。";
+    $subject = "We appreciate your registration, please check your email box to active your account.";
     Mail::send($view,$data,function($message) use ($from,$name,$to,$subject){
       $message->from($from,$name)->to($to)->subject($subject);
     });
@@ -115,7 +115,7 @@ class UsersController extends Controller
     $user->save();
 
     Auth::login($user);
-    session()->flash('success','恭喜你，激活成功！');
+    session()->flash('success','Your account has been activated successfully.');
     return redirect()->route('users.show',[$user]);
   }
 
@@ -125,13 +125,13 @@ class UsersController extends Controller
 
   public function followings(User $user) {
       $users = $user->followings()->paginate(30);
-      $title = '关注的人';
+      $title = 'Following';
       return view('users.show_follow', compact('users', 'title'));
   }
 
   public function followers(User $user) {
       $users = $user->followers()->paginate(30);
-      $title = '粉丝';
+      $title = 'Follower';
       return view('users.show_follow', compact('users', 'title'));
   }
 }

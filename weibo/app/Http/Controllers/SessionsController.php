@@ -32,22 +32,21 @@ class SessionsController extends Controller
        ];
 
        if (Auth::attempt($credentials,$request->has('remember'))) {
-           // 该用户存在于数据库，且邮箱和密码相符合
            if(Auth::user()->activated) {
-             session()->flash('success', '欢迎回来！');
+             session()->flash('success', 'Welcome Back！');
              $user = Auth::user();
              $expiresAt = Carbon::now()->addMinutes(1*3600*24);
-             if(!Cache::has('user_'.$user->id)){
+             if(!Cache::has('user_'.$user->id.'_profile')) {
                Cache::put('user_'.$user->id , $user , $expiresAt);
              }
              return redirect()->route('users.show', [Auth::user()]);
            } else {
              Auth:logout();
-             session()->flash('warning','你的账号未激活，请检查邮箱中的注册邮件进行激活。');
+             session()->flash('warning','Your account is required to be activated, please check your email box to active your account.');
              return redirect('/');
            }
        } else {
-         session()->flash('danger', '很抱歉，您的邮箱和密码不匹配');
+         session()->flash('danger', 'Sorry, username and password are not correct, please check your input and try again.');
          return redirect()->back();
        }
        return;
@@ -55,7 +54,7 @@ class SessionsController extends Controller
 
     public function destroy(Request $request){
       Auth::logout();
-      session()->flash('success', '您已成功退出！');
+      session()->flash('success', 'You has logged out.');
       return redirect('login');
     }
 }
