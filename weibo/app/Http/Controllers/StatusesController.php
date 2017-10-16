@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
-use App\Models\Status;
+use App\Models\Statuses;
 use Auth;
 use Cache;
 use Redis;
@@ -24,19 +24,25 @@ class StatusesController extends Controller
     Auth::user()->statuses()->create([
         'content' => $request->content
     ]);
-    
+
+    $this->clearStatusCache();
+    return redirect()->back();
+  }
+
+  public function destroy(Statuses $status) {
+    $this->authorize('destroy', $status);
+    $status->delete();
+    $this->clearStatusCache();
+    session()->flash('success', 'The status has been deleted successfully.');
+    return redirect()->back();
+  }
+
+  protected function clearStatusCache(){
     $user = Auth::user();
     $redis = Redis::connection('for-cache');
     $keys = $redis->keys("*user_".$user->id."_statuses*");
     foreach ($keys as $key) {
       $redis->del($key);
     }
-    return redirect()->back();
-  }
-  public function destroy(Status $status) {
-    $this->authorize('destroy', $status);
-    $status->delete();
-    session()->flash('success', 'The status has been deleted successfully.');
-    return redirect()->back();
   }
 }
