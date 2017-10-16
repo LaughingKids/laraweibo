@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Models\User;
 use Mail;
 use Auth;
+use Cache;
 
 class UsersController extends Controller
 {
@@ -36,7 +37,8 @@ class UsersController extends Controller
   }
 
   public function edit($id) {
-    $user = $this->getUserViaRedis($id);
+    $key = 'user_'.$id;
+    $user  = Cache::get($key);
     $this->authorize('update', $user);
     return view('users.edit', compact('user'));
   }
@@ -120,15 +122,5 @@ class UsersController extends Controller
       $users = $user->followers()->paginate(30);
       $title = '粉丝';
       return view('users.show_follow', compact('users', 'title'));
-  }
-
-  protected function getUserViaRedis($id) {
-    $userDetail = Redis::get('user:profile:' . $id);
-    $userDetail = json_decode($userDetail, TRUE);
-    $user = new User();
-    foreach ($userDetail as $key => $value) {
-      $user->{$key} = $value;
-    }
-    return $user;
   }
 }

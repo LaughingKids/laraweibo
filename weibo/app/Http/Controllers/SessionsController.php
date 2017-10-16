@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use Auth;
+use Cache;
+use Carbon\Carbon;
 
 class SessionsController extends Controller
 {
@@ -34,7 +36,10 @@ class SessionsController extends Controller
            if(Auth::user()->activated) {
              session()->flash('success', '欢迎回来！');
              $user = Auth::user();
-             Redis::set('user:profile:'.$user->id, $user);
+             $expiresAt = Carbon::now()->addMinutes(1*3600*24);
+             if(!Cache::has('user_'.$user->id)){
+               Cache::put('user_'.$user->id , $user , $expiresAt);
+             }
              return redirect()->route('users.show', [Auth::user()]);
            } else {
              Auth:logout();
@@ -48,9 +53,7 @@ class SessionsController extends Controller
        return;
     }
 
-    public function destroy(){
-      $user = Auth::user();
-      Redis::del('user:profile:'.$user->id, $user);
+    public function destroy(Request $request){
       Auth::logout();
       session()->flash('success', '您已成功退出！');
       return redirect('login');
