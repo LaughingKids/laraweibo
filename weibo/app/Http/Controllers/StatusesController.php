@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\Status;
 use Auth;
+use Cache;
+use Redis;
 
 class StatusesController extends Controller
 {
@@ -22,6 +24,13 @@ class StatusesController extends Controller
     Auth::user()->statuses()->create([
         'content' => $request->content
     ]);
+    
+    $user = Auth::user();
+    $redis = Redis::connection('for-cache');
+    $keys = $redis->keys("*user_".$user->id."_statuses*");
+    foreach ($keys as $key) {
+      $redis->del($key);
+    }
     return redirect()->back();
   }
   public function destroy(Status $status) {
