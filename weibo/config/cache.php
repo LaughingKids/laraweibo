@@ -91,4 +91,8 @@ return [
         str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
 
+    'cached_controller' => [
+      \App\Http\Controllers\Views\UsersController::class,
+      \App\Http\Controllers\StatusesController::class,
+    ],
 ];

@@ -20,6 +20,10 @@ class UsersController extends Controller
     $this->middleware('guest', [
         'only' => ['create']
     ]);
+
+    $this->middleware('cache',[
+       'only'=> ['show']
+    ]);
   }
   public function create(){
     return view('users.create');
