@@ -92,7 +92,13 @@ return [
     ),
 
     'cached_controller' => [
-      \App\Http\Controllers\Views\UsersController::class,
-      \App\Http\Controllers\StatusesController::class,
+      array(
+        'class' => \App\Http\Controllers\Views\UsersController::class,
+        'key' => 'user_id_statuses_page_num',
+      ),
+      array(
+        'class' => \App\Http\Controllers\StatusesController::class,
+        'key' => 'user_id_statuses_page_num',
+      )
     ],
 ];

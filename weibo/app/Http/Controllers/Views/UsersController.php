@@ -40,8 +40,6 @@ class UsersController extends Controller
       $statuses = $user->statuses()
                        ->orderBy('created_at','desc')
                        ->paginate(30);
-      $expiresAt = Carbon::now()->addMinutes(1*3600);
-      Cache::put('user_'.$user->id.'_statuses_page_'.$page ,$statuses,$expiresAt);
     }
     return view('users.show',compact('user','statuses'));
   }
